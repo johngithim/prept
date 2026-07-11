@@ -327,7 +327,17 @@ export default function Home() {
           </p>
         </div>
 
-        <PricingTable />
+        <PricingTable
+          checkoutProps={{
+            appearance: {
+              elements: {
+                drawerRoot: {
+                  zIndex: 2000,
+                },
+              },
+            },
+          }}
+        />
       </section>
 
       <section className={"relative z-10 pb-28 max-w-5xl mx-auto px-6"}>
