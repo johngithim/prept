@@ -6,7 +6,11 @@ import {
   SectionLabel,
 } from "../../../components/reusable";
 import { useState } from "react";
-import { ONBOARDING_ROLES } from "../../../lib/data";
+import { CATEGORIES, ONBOARDING_ROLES, YEARS_OPTIONS } from "../../../lib/data";
+import { Button } from "../../../components/ui/button";
+import { Label } from "../../../components/ui/label";
+import { Input } from "../../../components/ui/input";
+import { Textarea } from "../../../components/ui/textarea";
 
 const OnboardingPage = () => {
   const [role, setRole] = useState(null);
@@ -17,6 +21,29 @@ const OnboardingPage = () => {
     bio: "",
     categories: [],
   });
+
+  const toggleCategory = (val) => {
+    setForm((prev) => ({
+      ...prev,
+      categories: prev.categories.includes(val)
+        ? prev.categories.filter((c) => c !== val)
+        : [...prev.categories, val],
+    }));
+  };
+
+  const isInterviewerValid =
+    form.title.trim() &&
+    form.company.trim() &&
+    form.yearsExp.trim() &&
+    form.bio.trim() &&
+    form.categories.length > 0;
+
+  const canSubmit =
+    role === "INTERVIEWEE" || (role === "INTERVIEWER" && isInterviewerValid);
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+  };
 
   return (
     <div className={"min-h-screen px-6 flex flex-col items-center"}>
@@ -96,8 +123,118 @@ const OnboardingPage = () => {
                 >
                   {ONBOARDING_ROLES.find((r) => r.value === role)?.icon}
                 </span>
+                <div>
+                  <p className={"text-sm font-medium text-stone-200"}>
+                    {ONBOARDING_ROLES.find((r) => r.value === role)?.title}
+                  </p>
+                  <p className={"text-xs text-stone-600 mt-0.5"}>
+                    Selected role
+                  </p>
+                </div>
               </div>
+
+              <Button
+                variant={"outline"}
+                size={"sm"}
+                onClick={() => setRole(null)}
+              >
+                Change
+              </Button>
             </div>
+
+            {role === "INTERVIEWER" && (
+              <div
+                className={
+                  "bg-[#0f0f11] border border-white/10 rounded-2xl p-8 flex flex-wrap gap-6"
+                }
+              >
+                <div className={"grid grid-cols-2 gap-4"}>
+                  <div className={"flex flex-col gap-2"}>
+                    <Label htmlFor={"title"}>Current title</Label>
+                    <Input
+                      id="title"
+                      placeholder="Senior Software Engineer"
+                      value={form.title}
+                      onChange={(e) =>
+                        setForm((p) => ({ ...p, title: e.target.value }))
+                      }
+                    />
+                  </div>
+
+                  <div className={"flex flex-col gap-2"}>
+                    <Label htmlFor={"company"}>Company</Label>
+                    <Input
+                      id="company"
+                      placeholder="Google, Meta, Startup..."
+                      value={form.company}
+                      onChange={(e) =>
+                        setForm((p) => ({ ...p, company: e.target.value }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className={"flex flex-wrap gap-2"}>
+                  {YEARS_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type={"button"}
+                      onClick={() =>
+                        setForm((p) => ({ ...p, yearsExp: opt.value }))
+                      }
+                      className={`text-xs px-4 py-2 rounded-lg border ${form.yearsExp === opt.value ? "border-amber-400/40 bg-amber-400/10 text-amber-400" : "border-white/10 text-stone-500"}`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className={"flex flex-wrap gap-2"}>
+                  {CATEGORIES.map((cat) => {
+                    if (!cat?.value) return null;
+
+                    const active = form.categories.includes(cat.value);
+
+                    return (
+                      <button
+                        key={cat.value}
+                        type={"button"}
+                        onClick={() => toggleCategory(cat.value)}
+                        className={`text-xs px-4 py-2 rounded-lg border ${active ? "border-amber-400/40 bg-amber-400/10 text-amber-400" : "border-white/10 text-stone-500"}`}
+                      >
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <Textarea
+                  rows={4}
+                  maxLength={300}
+                  placeholder={
+                    "Tell interviewees about your background, what you specialize in, and what they can expect from a session with you."
+                  }
+                  value={form.bio}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, bio: e.target.value }))
+                  }
+                />
+              </div>
+            )}
+
+            <Button
+              variant={"gold"}
+              size={"hero"}
+              className={"w-full"}
+              disabled={false}
+              onClick={handleSubmit}
+            >
+              {false
+                ? "Setting up your account..."
+                : role === "INTERVIEWER"
+                  ? "Create interviwer profile"
+                  : "Go to dashboard"}
+            </Button>
           </div>
         )}
       </div>
