@@ -5,14 +5,20 @@ import {
   GrayTitle,
   SectionLabel,
 } from "../../../components/reusable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CATEGORIES, ONBOARDING_ROLES, YEARS_OPTIONS } from "../../../lib/data";
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 import { Input } from "../../../components/ui/input";
 import { Textarea } from "../../../components/ui/textarea";
+import { useRouter } from "next/navigation";
+import useFetch from "../../../hooks/use-fetch";
+import { completeOnboarding } from "../../../actions/onboarding";
 
 const OnboardingPage = () => {
+  const router = useRouter();
+  const { data, loading, fn: onboardingFn } = useFetch(completeOnboarding);
+
   const [role, setRole] = useState(null);
   const [form, setForm] = useState({
     title: "",
@@ -21,6 +27,12 @@ const OnboardingPage = () => {
     bio: "",
     categories: [],
   });
+
+  useEffect(() => {
+    if (data && !loading) {
+      router.push(role === "INTERVIEWER" ? "/dashboard" : "/explore");
+    }
+  }, [data, loading]);
 
   const toggleCategory = (val) => {
     setForm((prev) => ({
@@ -34,7 +46,7 @@ const OnboardingPage = () => {
   const isInterviewerValid =
     form.title.trim() &&
     form.company.trim() &&
-    form.yearsExp.trim() &&
+    form.yearsExp &&
     form.bio.trim() &&
     form.categories.length > 0;
 
@@ -43,6 +55,17 @@ const OnboardingPage = () => {
 
   const handleSubmit = () => {
     if (!canSubmit) return;
+
+    onboardingFn({
+      role,
+      ...(role === "INTERVIEWER" && {
+        title: form.title,
+        company: form.company,
+        yearsExp: Number(form.yearsExp),
+        bio: form.bio,
+        categories: form.categories,
+      }),
+    });
   };
 
   return (
@@ -226,14 +249,14 @@ const OnboardingPage = () => {
               variant={"gold"}
               size={"hero"}
               className={"w-full"}
-              disabled={false}
+              disabled={!canSubmit || loading}
               onClick={handleSubmit}
             >
-              {false
+              {loading
                 ? "Setting up your account..."
                 : role === "INTERVIEWER"
-                  ? "Create interviwer profile"
-                  : "Go to dashboard"}
+                  ? "Create interviewer profile"
+                  : "Explore Interviewer"}
             </Button>
           </div>
         )}
