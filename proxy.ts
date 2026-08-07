@@ -24,7 +24,7 @@ export default clerkMiddleware(async (auth, req) => {
   const decision = await aj.protect(req);
 
   if (decision.isDenied()) {
-    return NextResponse.json({ error: "Forbidden" }, { ststus: 403 });
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const { userId } = await auth();
   if (!userId && isProtectedRoute(req)) {

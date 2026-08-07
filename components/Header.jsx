@@ -57,7 +57,7 @@ const Header = async () => {
                 </Link>
               </Button>
               <Button variant={"default"} asChild>
-                <Link href={"/appointment"}>
+                <Link href={"/appointments"}>
                   <CalendarDays size={16} />
                   <span className={"hidden md:inline"}>My Appointments</span>
                 </Link>
