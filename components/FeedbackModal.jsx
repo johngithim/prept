@@ -10,7 +10,15 @@ import {
 import { RATING_CONFIG } from "../lib/data";
 import { StarsBackgroundDemo } from "./StarBackground";
 import { GrayTitle } from "./reusable";
-import { Brain, MessageSquare, Sparkles, TrendingUp } from "lucide-react";
+import {
+  AlertCircle,
+  Brain,
+  CheckCircle2,
+  MessageSquare,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
+import { Badge } from "./ui/badge";
 
 const FeedbackModal = ({ open, feedback, onOpenChange, intervieweeName }) => {
   if (!feedback) return null;
@@ -20,11 +28,19 @@ const FeedbackModal = ({ open, feedback, onOpenChange, intervieweeName }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={
-          "bg-black border border-amber-200/20 text-stone-100 sm:max-w-3xl max-h-[85vh] overflow-y-auto"
+          "bg-black border border-amber-200/20 text-stone-100 sm:max-w-xl p-0"
         }
+        style={{
+          maxHeight: "85vh",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
       >
-        <StarsBackgroundDemo />
-        <DialogHeader className={"relative"}>
+        <div className={"pointer-events-none absolute inset-0"}>
+          <StarsBackgroundDemo />
+        </div>
+        <DialogHeader className={"relative px-6 pt-6 shrink-0"}>
           <DialogTitle className={"font-serif text-2xl tracking-tight"}>
             <GrayTitle>AI Feedback Report</GrayTitle>
           </DialogTitle>
@@ -36,7 +52,10 @@ const FeedbackModal = ({ open, feedback, onOpenChange, intervieweeName }) => {
           )}
         </DialogHeader>
 
-        <div className={"relative flex flex-col gap-5 mt-2"}>
+        <div
+          className={"relative flex flex-col gap-5 mt-2 px-6 pb-6"}
+          style={{ overflowY: "auto", minHeight: 0 }}
+        >
           <div
             className={`rounded-2xl border ${rating.className} bg-linear-to-br ${rating.bg} to-transparent p-6 flex items-center justify-between`}
           >
@@ -111,6 +130,51 @@ const FeedbackModal = ({ open, feedback, onOpenChange, intervieweeName }) => {
                 <p className={"text-sm text-stone-300"}>{item.value}</p>
               </div>
             ))}
+          </div>
+
+          {/*strength and improvement*/}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="bg-[#141417] border border-white/8 rounded-xl p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle2 size={13} className="text-green-400" />
+                <p className="text-[10px] uppercase tracking-widest text-stone-500">
+                  Strengths
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {feedback.strengths?.map((s, i) => (
+                  <Badge
+                    key={i}
+                    variant="outline"
+                    className="justify-start border-green-500/20 text-green-400 whitespace-normal"
+                  >
+                    ✓ {s}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-[#141417] border border-white/8 rounded-xl p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertCircle size={13} className="text-red-400" />
+                <p className="text-[10px] uppercase tracking-widest text-stone-500">
+                  To improve
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {feedback.improvements?.map((imp, i) => (
+                  <Badge
+                    key={i}
+                    variant="outline"
+                    className="justify-start border-red-500/20 text-red-400 whitespace-normal"
+                  >
+                    ✓ {imp}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </DialogContent>

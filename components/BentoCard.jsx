@@ -1,5 +1,8 @@
 import React from "react";
 
+/**
+ * @param {{ icon?: React.ReactNode, title?: React.ReactNode, desc?: string, className?: string, children?: React.ReactNode }} props
+ */
 const BentoCard = ({ icon, title, desc, className = "", children }) => {
   return (
     <div
