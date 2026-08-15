@@ -7,7 +7,12 @@ import {
 } from "@/components/animate-ui/components/animate/code";
 import { Code2, File } from "lucide-react";
 
-export const CodeDemo = ({ duration, delay, writing, cursor }) => {
+export const CodeDemo = ({
+  duration = 30000,
+  delay = 0,
+  writing = false,
+  cursor = true,
+}) => {
   return (
     <Code
       key={`${duration}-${delay}-${writing}-${cursor}`}
