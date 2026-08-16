@@ -56,11 +56,16 @@ export async function POST(request) {
 
     // ── Recording ready ───────────────────────────────────────────────────────
     if (eventType === "call.recording_ready") {
-      const recordingUrl = body.call_recording?.url;
+      const recordingUrl =
+        body.call_recording?.url ||
+        body.recording?.url ||
+        body.url ||
+        body.recording_url ||
+        body.call_recording_url;
 
       if (!recordingUrl) {
         console.log(
-          `[stream-webhook] call.recording_ready received but no URL in payload`,
+          `[stream-webhook] call.recording_ready received but no URL in payload`
         );
         return Response.json({ ok: true });
       }
@@ -72,7 +77,7 @@ export async function POST(request) {
       });
 
       console.log(
-        `[stream-webhook] ✓ Recording URL saved for booking ${booking.id}`,
+        `[stream-webhook] ✓ Recording URL saved for booking ${booking.id}`
       );
       return Response.json({ ok: true });
     }

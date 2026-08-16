@@ -6,6 +6,8 @@ import { Button } from "../../../components/ui/button";
 import Link from "next/link";
 import AppointmentCard from "../../../components/AppointmentCard";
 
+export const dynamic = "force-dynamic";
+
 const Appointments = async () => {
   const appointments = await getIntervieweeAppointments();
   const now = new Date();

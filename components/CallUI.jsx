@@ -72,10 +72,7 @@ const CallUI = ({
   const handleLeave = useCallback(async () => {
     try {
       if (call) {
-        const isRecording = call.state?.recording;
-        if (isRecording) {
-          await call.stopRecording().catch(() => {});
-        }
+        await call.stopRecording().catch(() => {});
         await call.leave().catch(() => {});
       }
     } finally {
