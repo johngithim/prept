@@ -17,7 +17,7 @@ export async function POST(request) {
   }
 
   // call_cid arrives as "default:mock_123_abc" — we stored just "mock_123_abc"
-  const callCid = body.call_cid ?? "";
+  const callCid = body.call_cid ?? body.call?.cid ?? body.call?.id ?? "";
   const streamCallId = callCid.includes(":") ? callCid.split(":")[1] : callCid;
   console.log(
     `[stream-webhook] call_cid: ${callCid} → streamCallId: ${streamCallId}`,
@@ -56,11 +56,16 @@ export async function POST(request) {
 
     // ── Recording ready ───────────────────────────────────────────────────────
     if (eventType === "call.recording_ready") {
-      const recordingUrl = body.call_recording?.url;
+      const recordingUrl =
+        body.call_recording?.url ||
+        body.recording?.url ||
+        body.url ||
+        body.recording_url ||
+        body.call_recording_url;
 
       if (!recordingUrl) {
         console.log(
-          `[stream-webhook] call.recording_ready received but no URL in payload`,
+          `[stream-webhook] call.recording_ready received but no URL in payload`
         );
         return Response.json({ ok: true });
       }
@@ -72,7 +77,7 @@ export async function POST(request) {
       });
 
       console.log(
-        `[stream-webhook] ✓ Recording URL saved for booking ${booking.id}`,
+        `[stream-webhook] ✓ Recording URL saved for booking ${booking.id}`
       );
       return Response.json({ ok: true });
     }
@@ -87,7 +92,12 @@ export async function POST(request) {
         return Response.json({ ok: true });
       }
 
-      const transcriptUrl = body.call_transcription?.url;
+      const transcriptUrl =
+        body.call_transcription?.url ||
+        body.transcription?.url ||
+        body.transcript?.url ||
+        body.url ||
+        body.transcription_url;
       if (!transcriptUrl) {
         console.log(
           `[stream-webhook] call.transcription_ready received but no transcript URL in payload`,
@@ -147,11 +157,11 @@ export async function POST(request) {
 
       // 3. Generate feedback via Gemini
       console.log(
-        `[stream-webhook] Sending transcript to Gemini (gemini-2.5-flash-lite)...`,
+        `[stream-webhook] Sending transcript to Gemini (gemini-1.5-flash)...`,
       );
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash-lite",
+        model: "gemini-1.5-flash",
       });
       const categories =
         booking.interviewer.categories?.join(", ") ?? "General";
@@ -180,8 +190,6 @@ Analyze the candidate's performance. Respond ONLY with a valid JSON object, no m
       const result = await model.generateContent(prompt);
       const raw = result.response
         .text()
-        .trim()
-        .replace(/^```json|^```|```$/gm, "")
         .trim();
 
       console.log(
@@ -190,7 +198,8 @@ Analyze the candidate's performance. Respond ONLY with a valid JSON object, no m
         }`,
       );
 
-      const feedbackData = JSON.parse(raw);
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      const feedbackData = JSON.parse(jsonMatch ? jsonMatch[0] : raw);
       console.log(
         `[stream-webhook] Feedback parsed — overallRating: ${feedbackData.overallRating} | recommendation: ${feedbackData.recommendation}`,
       );

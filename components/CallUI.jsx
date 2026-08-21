@@ -72,16 +72,18 @@ const CallUI = ({
   const handleLeave = useCallback(async () => {
     try {
       if (call) {
-        const isRecording = call.state?.recording;
-        if (isRecording) {
-          await call.stopRecording().catch(() => {});
+        await call.stopRecording().catch(() => {});
+        await call.stopTranscription().catch(() => {});
+        if (isInterviewer) {
+          await call.endCall().catch(() => {});
+        } else {
+          await call.leave().catch(() => {});
         }
-        await call.leave().catch(() => {});
       }
     } finally {
       onLeave();
     }
-  }, [call, onLeave]);
+  }, [call, isInterviewer, onLeave]);
 
   if (callingState === CallingState.LEFT) {
     return (
