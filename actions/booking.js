@@ -153,6 +153,15 @@ export const bookSlot = async ({ interviewerId, startTime, endTime }) => {
         },
       });
 
+      await tx.creditTransaction.create({
+        data: {
+          userId: interviewerId,
+          amount: credits,
+          type: "BOOKING_EARNING",
+          bookingId: newBooking.id,
+        },
+      });
+
       await tx.user.update({
         where: { id: dbUser.id },
         data: { credits: { decrement: credits } },
@@ -160,7 +169,7 @@ export const bookSlot = async ({ interviewerId, startTime, endTime }) => {
 
       await tx.user.update({
         where: { id: interviewerId },
-        data: { credits: { increment: credits } },
+        data: { creditBalance: { increment: credits } },
       });
 
       return newBooking;

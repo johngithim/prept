@@ -3,6 +3,7 @@ import {
   getAvailability,
   getInterviewerAppointments,
   getInterviewerStats,
+  getWithdrawalHistory,
 } from "../../../actions/dashboard";
 import PageHeader from "../../../components/reusable";
 import {
@@ -19,10 +20,11 @@ import { ClipboardList, Clock, Wallet } from "lucide-react";
 const DashboardPage = async () => {
   const dbUser = await getCurrentUser();
 
-  const [availability, appointments, stats] = await Promise.all([
+  const [availability, appointments, stats, history] = await Promise.all([
     getAvailability(),
     getInterviewerAppointments(),
     getInterviewerStats(),
+    getWithdrawalHistory(),
   ]);
   return (
     <main className="min-h-screen bg-black">
@@ -69,7 +71,7 @@ const DashboardPage = async () => {
           </TabsContent>
 
           <TabsContent value="earnings">
-            <EarningsSection stats={stats} />
+            <EarningsSection stats={stats} history={history} />
           </TabsContent>
         </Tabs>
       </div>

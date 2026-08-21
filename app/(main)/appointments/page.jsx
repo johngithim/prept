@@ -4,7 +4,7 @@ import PageHeader from "../../../components/reusable";
 import { CalendarDays } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import Link from "next/link";
-import AppointmentCard from "../../../components/AppointmentCard";
+import { AppointmentCard } from "../../../components/AppointmentCard";
 
 export const dynamic = "force-dynamic";
 

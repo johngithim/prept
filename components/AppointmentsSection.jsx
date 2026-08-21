@@ -1,7 +1,7 @@
 import React from "react";
 import { GrayTitle } from "./reusable";
 import { ClipboardList } from "lucide-react";
-import AppointmentCard from "./AppointmentCard";
+import { AppointmentCard } from "./AppointmentCard";
 
 const AppointmentsSection = ({ appointments }) => {
   const now = new Date();

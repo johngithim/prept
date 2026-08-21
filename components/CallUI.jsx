@@ -73,12 +73,17 @@ const CallUI = ({
     try {
       if (call) {
         await call.stopRecording().catch(() => {});
-        await call.leave().catch(() => {});
+        await call.stopTranscription().catch(() => {});
+        if (isInterviewer) {
+          await call.endCall().catch(() => {});
+        } else {
+          await call.leave().catch(() => {});
+        }
       }
     } finally {
       onLeave();
     }
-  }, [call, onLeave]);
+  }, [call, isInterviewer, onLeave]);
 
   if (callingState === CallingState.LEFT) {
     return (
